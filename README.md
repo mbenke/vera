@@ -1,0 +1,1 @@
+Exploring prover ideas for intuitionistic logic
