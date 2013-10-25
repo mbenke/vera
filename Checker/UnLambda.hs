@@ -7,6 +7,8 @@ data Expr = F Name -- Free
           | Abs Scope
           deriving (Show,Eq)
 
+data Scope = Scope Expr deriving(Show,Eq)
+
 abstract :: Name -> Expr -> Scope
 abstract me expr = Scope (letmeB 0 expr) where
          letmeB :: Int -> Expr -> Expr
@@ -17,4 +19,15 @@ abstract me expr = Scope (letmeB 0 expr) where
          letmeB this (Abs (Scope body)) = Abs $
                 Scope (letmeB (this+1) body)
 
-data Scope = Scope Expr deriving(Show,Eq)
+lam :: Name -> Expr -> Expr
+lam n t = Abs (abstract n t)
+lams :: [Name] -> Expr -> Expr
+lams [] = id
+lams (x:xs) = lam x . lams xs
+comI = lam "x" (F "x")
+comK = lams ["x", "y"] (F "x") 
+comS = lama "x y z" $ (fx :$ fz) :$ (fy :$ fz) where [fx,fy,fz] = fria "x y z"
+lama :: String -> Expr -> Expr
+lama = lams . words
+fria :: String -> [Expr]
+fria = map F . words 
