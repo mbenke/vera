@@ -1,5 +1,5 @@
 -- untyped lambda, "not a number" approach
-
+infixl 6 :$
 type Name = String -- FIXME
 data Expr = F Name -- Free
           | B Int  -- Bound
@@ -31,3 +31,20 @@ lama :: String -> Expr -> Expr
 lama = lams . words
 fria :: String -> [Expr]
 fria = map F . words 
+
+instantiate :: Expr -> Scope -> Expr
+instantiate what (Scope body) = whatsB 0 body where
+            whatsB this (B that) | this == that = what
+                                 | otherwise = B that
+            whatsB this (F you) = F you
+            whatsB this (t :$ s) = whatsB this t :$ whatsB this s
+            whatsB this  (Abs (Scope body)) = 
+               Abs $ Scope (whatsB (this+1) body)
+
+substitute :: Expr -> Name -> Expr -> Expr
+substitute image me = instantiate image . abstract me
+
+red ((Abs s) :$ t) = instantiate t s
+red ((x :$ y) :$ z) = red (x :$ y) :$ z
+red t = t
+skk = (comS :$ comK) :$ comK
