@@ -1,3 +1,4 @@
+module Checker.UnLambda where
 -- untyped lambda, "not a number" approach
 infixl 6 :$
 type Name = String -- FIXME
@@ -48,3 +49,5 @@ red ((Abs s) :$ t) = instantiate t s
 red ((x :$ y) :$ z) = red (x :$ y) :$ z
 red t = t
 skk = (comS :$ comK) :$ comK
+
+main = print $ red skk
