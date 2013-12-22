@@ -1,5 +1,5 @@
 module Checker.UnLambda where
-import Text.PrettyPrint.ANSI.Leijen
+import           Text.PrettyPrint.ANSI.Leijen
 -- untyped lambda, "not a number" approach
 infixl 6 :$
 type Name = String -- FIXME
@@ -11,7 +11,7 @@ data Expr = F Name -- Free
 
 data Scope = Scope Expr deriving(Eq)
 instance Show Scope where
-   show (Scope e) = show e
+   show (Scope e) = "(" ++ show e ++ ")"
 
 abstract :: Name -> Expr -> Scope
 abstract me expr = Scope (letmeB 0 expr) where
@@ -48,7 +48,9 @@ instantiate what (Scope body) = whatsB 0 body where
 substitute :: Expr -> Name -> Expr -> Expr
 substitute image me = instantiate image . abstract me
 
-whnf ((Abs s) :$ t) = whnf $ instantiate t s
+whnf (x :$ t) = case whnf x of
+    (Abs s) -> whnf $ instantiate t s
+    y -> y
 whnf e = e
 
 nf(x :$ y) = case whnf x of
@@ -56,6 +58,6 @@ nf(x :$ y) = case whnf x of
         _ -> nf x :$ nf y
 nf(Abs (Scope y)) = Abs(Scope (nf y))
 nf t = t
-skk = (comS :$ comK) :$ comK
+skk = (comS :$ comK) -- :$ comK
 
-main = print $ nf skk
+main = print $ nf  (comS)
