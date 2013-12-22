@@ -9,7 +9,9 @@ data Expr = F Name -- Free
           | Abs Scope
           deriving (Show,Eq)
 
-data Scope = Scope Expr deriving(Show,Eq)
+data Scope = Scope Expr deriving(Eq)
+instance Show Scope where
+   show (Scope e) = show e
 
 abstract :: Name -> Expr -> Scope
 abstract me expr = Scope (letmeB 0 expr) where
@@ -27,12 +29,12 @@ lams :: [Name] -> Expr -> Expr
 lams [] = id
 lams (x:xs) = lam x . lams xs
 comI = lam "x" (F "x")
-comK = lams ["x", "y"] (F "x") 
+comK = lams ["x", "y"] (F "x")
 comS = lama "x y z" $ (fx :$ fz) :$ (fy :$ fz) where [fx,fy,fz] = fria "x y z"
 lama :: String -> Expr -> Expr
 lama = lams . words
 fria :: String -> [Expr]
-fria = map F . words 
+fria = map F . words
 
 instantiate :: Expr -> Scope -> Expr
 instantiate what (Scope body) = whatsB 0 body where
@@ -40,12 +42,12 @@ instantiate what (Scope body) = whatsB 0 body where
                                  | otherwise = B that
             whatsB this (F you) = F you
             whatsB this (t :$ s) = whatsB this t :$ whatsB this s
-            whatsB this  (Abs (Scope body)) = 
+            whatsB this  (Abs (Scope body)) =
                Abs $ Scope (whatsB (this+1) body)
 
 substitute :: Expr -> Name -> Expr -> Expr
 substitute image me = instantiate image . abstract me
- 
+
 whnf ((Abs s) :$ t) = whnf $ instantiate t s
 whnf e = e
 
