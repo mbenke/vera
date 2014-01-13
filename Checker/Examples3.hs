@@ -10,7 +10,14 @@ import Control.Monad(liftM2)
 import Data.Monoid
 
 import Control.Monad.State.Class
+(%=) :: MonadState s m => SimpleLens s a -> (a->a) -> m ()
+l %= f = modify (l %~ f)
 
+(.=) :: MonadState s m => SimpleLens s a -> a -> m ()
+l .= c = l %= const c
+
+use :: MonadState s m => SimpleLens s a -> m a
+use l = gets (^.l)
 
 data TState = TState { _output :: [String], _tsEnv :: Env, _tsCnt :: Int, 
                        _tsGoals :: [Goal], _tsCurrent :: Name, _tsTerm :: Term}
@@ -52,7 +59,7 @@ setCurrent :: Name -> TM ()
 setCurrent n = modify $ \s -> s { _tsCurrent = n }
 
 getGoals :: TM [Goal]
-getGoals = gets _tsGoals
+getGoals = use tsGoals
 
 getGoal = do
   gs <- getGoals
@@ -65,7 +72,7 @@ popGoal = do
   case gs of
      [] -> throwError "no unproven goals"  
      (g:gs) -> do
-       modify $ \s -> s { _tsGoals = gs }
+       tsGoals .= gs
        return g
 
 pushGoal :: Goal -> TM ()
