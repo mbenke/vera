@@ -54,4 +54,17 @@ prove = pr [] Map.empty where
          guard $ tail == a 
          let hist' = a:hist
          as <- mapM (pr hist' env) v
-         return $ Var x  
+         return $ Var x
+
+ 
+-- | Tests
+--
+-- >>> prove $ 0 :-> 0
+-- [Lam "h0" (Var "h0")]
+
+--
+-- >>> prove $ (0 :-> 1):-> (1:->0) :-> 1
+-- []
+
+-- FIXME
+test3 = prove $ (0 :-> 1):-> (1:->0) :-> 0 :-> 1
