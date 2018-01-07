@@ -54,7 +54,7 @@ prove = pr [] Map.empty where
          guard $ tail == a 
          let hist' = a:hist
          as <- mapM (pr hist' env) v
-         return $ Var x
+         return (Var x $$ as)
 
  
 -- | Tests
