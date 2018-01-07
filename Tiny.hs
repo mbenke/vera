@@ -16,6 +16,7 @@ instance Num Type where
   signum = undefined
   (*) = undefined
   (+) = undefined
+  (-) = undefined
 
 hypName :: Type -> Name
 hypName = ('h':).mangleTy
@@ -61,7 +62,6 @@ prove = pr [] Map.empty where
 --
 -- >>> prove $ 0 :-> 0
 -- [Lam "h0" (Var "h0")]
-
 --
 -- >>> prove $ (0 :-> 1):-> (1:->0) :-> 1
 -- []
