@@ -40,7 +40,22 @@ pparens False d = d
 
 type Term = LC Int
 
-termI = Lam 1 (Var 1)
-termK = Lam 1 $ Lam 2 $ Var 1
+tmI = Lam 1 (Var 1)
+tmK = Lam 1 $ Lam 2 $ Var 1
 
-termS = lam [1,2,3] (Var 1 :$ Var 3 :$ (Var 2 :$ Var 3))
+tmS = lam [1,2,3] (Var 1 :$ Var 3 :$ (Var 2 :$ Var 3))
+
+infixr 6 :->
+data Ty v = TyVar v | Type :-> Type
+
+instance (Show v) => Show (Ty v) where
+  show = renderStyle style . ppTy 0
+
+ppTy :: Show v => Int -> Ty v -> Doc
+ppTy _ (TyVar v) = text (show v)
+ppTy p (a :-> r) = pparens (p>1) (ppTy 2 a <+> text ":->" <+> ppTy 1 r)
+
+type Type = Ty Int
+
+tyI = TyVar 1 :-> TyVar 1 
+tyK = TyVar 1 :-> TyVar 2  :-> TyVar 1
