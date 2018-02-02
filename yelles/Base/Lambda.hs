@@ -59,3 +59,5 @@ type Type = Ty Int
 
 tyI = TyVar 1 :-> TyVar 1 
 tyK = TyVar 1 :-> TyVar 2  :-> TyVar 1
+tyS = (TyVar 0 :-> TyVar 1  :-> TyVar 2)
+    :-> (TyVar 0 :-> TyVar 1) :-> (TyVar 0 :-> TyVar 2)
