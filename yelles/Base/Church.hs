@@ -7,6 +7,8 @@ module Base.Church(
 
 import Text.PrettyPrint hiding(($$))
 import Data.List(union,(\\))
+import Data.IntMap(IntMap,(!))
+import qualified Data.IntMap as Map
 
 infixl 9 :$
 data LC v t = Var v | Lam v t (LC v t) | (LC v t) :$ (LC v t)
@@ -42,14 +44,15 @@ pparens False d = d
 
 type Term = LC Int Type
 
+tmI, tmK, tmS :: Term
 tmI = Lam 1 (TyVar 1) (Var 1)
 tmK = lam [(1,t 1), (2,t 2)] $ Var 1 where t = TyVar
 
-tmS = lam [(1,t 1), (2,t 2), (3,t 3)] (Var 1 :$ Var 3 :$ (Var 2 :$ Var 3))
+tmS = lam [(1,t 2 :-> t 1 :-> t 0), (2,t 2 :-> t 1), (3,t 2)] (Var 1 :$ Var 3 :$ (Var 2 :$ Var 3))
       where t = TyVar
 
 infixr 6 :->
-data Ty v = TyVar v | Type :-> Type
+data Ty v = TyVar v | Type :-> Type deriving(Eq)
 
 instance (Show v) => Show (Ty v) where
   show = renderStyle style . ppTy 0
@@ -60,7 +63,23 @@ ppTy p (a :-> r) = pparens (p>1) (ppTy 2 a <+> text ":->" <+> ppTy 1 r)
 
 type Type = Ty Int
 
+tyI, tyK, tyS :: Type
 tyI = TyVar 1 :-> TyVar 1 
 tyK = TyVar 1 :-> TyVar 2  :-> TyVar 1
-tyS = (TyVar 0 :-> TyVar 1  :-> TyVar 2)
-    :-> (TyVar 0 :-> TyVar 1) :-> (TyVar 0 :-> TyVar 2)
+tyS = (TyVar 2 :-> TyVar 1  :-> TyVar 0)
+    :-> (TyVar 2 :-> TyVar 1) :-> (TyVar 2 :-> TyVar 0)
+
+
+type Env = IntMap Type
+typeOf :: Env -> Term -> Type
+typeOf env (Var n) = env ! n 
+typeOf env (Lam v t e) = t :-> typeOf (Map.insert v t env) e
+typeOf env (f :$ a) = let {tf = typeOf env f; ta = typeOf env a}  in
+  case tf of                      
+    t1 :-> t2
+        | ta == t1 -> t2
+        | otherwise -> error (unwords["Expected type of",show a, "is", show t1,
+                                      "actual:", show ta])
+    _ -> error (unwords ["The term", show f, "has type",  show tf,
+                         "which is not a function type"])
+
