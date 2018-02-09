@@ -71,6 +71,10 @@ tyS = (TyVar 2 :-> TyVar 1  :-> TyVar 0)
 
 
 type Env = IntMap Type
+
+emptyEnv :: Env
+emptyEnv = Map.empty
+
 typeOf :: Env -> Term -> Type
 typeOf env (Var n) = env ! n 
 typeOf env (Lam v t e) = t :-> typeOf (Map.insert v t env) e
