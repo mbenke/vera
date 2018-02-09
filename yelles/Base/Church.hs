@@ -45,29 +45,29 @@ pparens False d = d
 type Term = LC Int Type
 
 tmI, tmK, tmS :: Term
-tmI = Lam 1 (TyVar 1) (Var 1)
-tmK = lam [(1,t 1), (2,t 2)] $ Var 1 where t = TyVar
+tmI = Lam 1 (TyCon 1) (Var 1)
+tmK = lam [(1,t 1), (2,t 2)] $ Var 1 where t = TyCon
 
 tmS = lam [(1,t 2 :-> t 1 :-> t 0), (2,t 2 :-> t 1), (3,t 2)] (Var 1 :$ Var 3 :$ (Var 2 :$ Var 3))
-      where t = TyVar
+      where t = TyCon
 
 infixr 6 :->
-data Ty v = TyVar v | Type :-> Type deriving(Eq)
+data Ty v = TyCon v | Type :-> Type deriving(Eq)
 
 instance (Show v) => Show (Ty v) where
   show = renderStyle style . ppTy 0
 
 ppTy :: Show v => Int -> Ty v -> Doc
-ppTy _ (TyVar v) = text (show v)
+ppTy _ (TyCon v) = text (show v)
 ppTy p (a :-> r) = pparens (p>1) (ppTy 2 a <+> text ":->" <+> ppTy 1 r)
 
 type Type = Ty Int
 
 tyI, tyK, tyS :: Type
-tyI = TyVar 1 :-> TyVar 1 
-tyK = TyVar 1 :-> TyVar 2  :-> TyVar 1
-tyS = (TyVar 2 :-> TyVar 1  :-> TyVar 0)
-    :-> (TyVar 2 :-> TyVar 1) :-> (TyVar 2 :-> TyVar 0)
+tyI = TyCon 1 :-> TyCon 1 
+tyK = TyCon 1 :-> TyCon 2  :-> TyCon 1
+tyS = (TyCon 2 :-> TyCon 1  :-> TyCon 0)
+    :-> (TyCon 2 :-> TyCon 1) :-> (TyCon 2 :-> TyCon 0)
 
 
 type Env = IntMap Type
