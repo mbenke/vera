@@ -1,4 +1,4 @@
-module Data.String.StripSpec (main, spec) where
+module Base.ChurchSpec(main, spec) where
 
 import Test.Hspec
 import Base.Church
