@@ -12,7 +12,7 @@ import qualified Data.IntMap as Map
 
 infixl 9 :$
 data LC v t = Var v | Lam v t (LC v t) | (LC v t) :$ (LC v t)
-    deriving (Eq)
+    deriving (Eq, Ord)
 
 infixl 8 $$
 ($$) :: LC v t -> [LC v t] -> LC v t
@@ -52,7 +52,7 @@ tmS = lam [(1,t 2 :-> t 1 :-> t 0), (2,t 2 :-> t 1), (3,t 2)] (Var 1 :$ Var 3 :$
       where t = TyCon
 
 infixr 6 :->
-data Ty v = TyCon v | Type :-> Type deriving(Eq)
+data Ty v = TyCon v | Type :-> Type deriving(Eq, Ord)
 
 instance (Show v) => Show (Ty v) where
   show = renderStyle style . ppTy 0
