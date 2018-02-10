@@ -11,5 +11,10 @@ main = hspec spec
 spec :: Spec
 spec = do
   describe "typeOf" $ do
+    it "typechecks I" $ do
+      typeOf emptyEnv tmI `shouldBe` tyI
     it "typechecks K" $ do
       typeOf emptyEnv tmK `shouldBe` tyK
+    it "typechecks S" $ do
+      typeOf emptyEnv tmS `shouldBe` tyS
+
