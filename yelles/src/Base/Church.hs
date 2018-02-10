@@ -1,5 +1,8 @@
 module Base.Church(
-  LC(..), ($$), lam, Term, Ty(..), Type
+  LC(..), ($$), lam, Term, Ty(..), Type,
+  tmI, tmK, tmS,
+  tyI, tyK, tyS,
+  Env, emptyEnv, typeOf
                   ) where
 -- Borrowing some ideas from Augustsson's "Lambda Calculus Cooked 4 ways"
 -- http://www.augustsson.net/Darcs/Lambda/top.pdf
