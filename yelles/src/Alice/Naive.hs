@@ -33,7 +33,7 @@ instance Ask Query where
   query = id
 
 instance Ask Type where
-  query t = (envFromList [], t)
+  query t = (emptyEnv, t)
 
 instance Ask ([(Int, Type)], Type) where
   query (e, g) = (envFromList e, g)
